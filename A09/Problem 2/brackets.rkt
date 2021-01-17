@@ -1,0 +1,62 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname brackets) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor mixed-fraction #f #t none #f () #t)))
+;; ==========================================================
+;; Mukund Rana (mk3rana)
+;; CS 135 Fall 2020
+;; Assignmnet 9, Q2 
+;; ==========================================================
+;;
+
+;;(balanced? bracket) determines whether "bracket" is balanced or noy
+;;Examples 
+(check-expect (balanced? "(<>[])") true)
+(check-expect (balanced? "((<>[])<>)[]") true)
+
+
+;;balanced?: Str -> Bool
+(define (balanced? bracket)
+  (local
+    [(define (remove-from-lst lst)
+       (rest lst))
+
+
+     (define (balanced/acc? bracket stack)
+       (cond
+         [(empty? bracket) true]
+         [(char=? (first bracket) #\() (balanced/acc? (rest bracket)
+                                                      (cons (first bracket) stack))]
+         [(char=? (first bracket) #\[) (balanced/acc? (rest bracket)
+                                                      (cons (first bracket) stack))]
+         [(char=? (first bracket) #\<) (balanced/acc? (rest bracket)
+                                                      (cons (first bracket) stack))]
+         [(and (char=? (first stack) #\() (char=? (first bracket) #\))) (balanced/acc? (rest bracket)
+                                                                                       (remove-from-lst stack))]
+         [(and (char=? (first stack) #\<) (char=? (first bracket) #\>)) (balanced/acc? (rest bracket)
+                                                                                       (remove-from-lst stack))]
+         [(and (char=? (first stack) #\[) (char=? (first bracket) #\])) (balanced/acc? (rest bracket)
+                                                                                       (remove-from-lst stack))]
+         [else false]))]
+
+    (balanced/acc? (string->list bracket) empty)))
+
+
+;;tests
+(check-expect (balanced? "(<)>") false)
+(check-expect (balanced? "((<)>") false)
+(check-expect (balanced? "((()))") true)
+ 
+ 
+
+
+
+
+    
+    
+
+
+
+
+
+         
+     

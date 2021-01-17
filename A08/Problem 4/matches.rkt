@@ -1,0 +1,39 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname matches) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor mixed-fraction #f #t none #f () #t)))
+;; ==========================================================
+;; Mukund Rana (mk3rana)
+;; CS 135 Fall 2020
+;; Assignmnet 8, Q4
+;; ==========================================================
+;;
+
+;;(matches-func? f lst-pairs) produces true if each pair in the list is in the form
+;;  (lst-pair (f lst-pair))
+;;Examples
+(check-expect (matches-func? sqr empty) true)
+
+;;matches-func?: (X) (listof (Any Any)) -> Bool ;; Contract?
+(define (matches-func? f lst-pairs)
+  (local
+    [(define (unzip lst-pairs)
+       (list (map (lambda (a) (first a)) lst-pairs)
+             (map (lambda (b) (second b)) lst-pairs)))
+     
+     (define (apply-function f first-lst-pairs)
+       (map f first-lst-pairs))
+     
+     (define (compare-list lst1 lst2)
+       (equal? lst1 lst2))]
+
+    (compare-list (apply-function f (first (unzip lst-pairs)))
+                  (second (unzip lst-pairs)))))
+
+
+;;tests 
+(check-expect (matches-func? sqr '((5 25) (2 4) (10 100)))
+              true)
+(check-expect (matches-func? add1 '((1 2) (3 5) (10 15)))
+              false)
+
+

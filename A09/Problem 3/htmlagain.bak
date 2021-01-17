@@ -1,0 +1,43 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname htmlagain) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor mixed-fraction #f #t none #f () #t)))
+(define (opening-tag loc)
+  (cond
+    [(empty? loc) empty]
+    [(= (length loc) 4) loc]
+    [(char=? (first loc) #\>) (cons #\> empty)]
+    [(char=? (third loc) #\/) (cons (first loc) empty)]
+    [else (cons (first loc) (opening-tag (rest loc)))]))
+
+(define (closing-tag loc)
+  (cond
+    [(empty? loc) empty]
+    [(= (length loc) 4) loc]
+    [(char=? (first loc) #\>) (rest loc)]
+    [(char=? (third loc) #\/) (rest loc)]
+    [else (closing-tag (rest loc))]))
+
+
+;; loc->lol: (listof Char) → (listof Str)
+(define (loc->lol loc)
+  (local [(define fline (opening-tag loc))
+          (define rlines (closing-tag loc))]
+    (cond
+      [(empty? loc) empty]
+      [(not (member? #\> loc))  (list (list->string loc))]
+      [(= (length loc) 4) (list (list->string loc))]
+      [else (cons (list->string fline)
+                  (loc->lol rlines))])))
+
+;; tokenize: Str -> (listof Str)
+(define (tokenize s) (loc->lol (string->list s)))
+
+
+
+(check-expect (tokenize "<p><h1>Heading</h1>Text</p>")
+              '("<p>" "<h1>" "Heading" "</h1>" "Text" "</p>"))
+(check-expect (tokenize "a b c") '("a b c"))
+(check-expect (tokenize "") empty)
+
+
+

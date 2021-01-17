@@ -1,0 +1,23 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-abbr-reader.ss" "lang")((modname not-lists) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor mixed-fraction #f #t none #f () #t)))
+(define-struct ls (first rest))  ;; Do we need to include the data definition 
+
+;; A (lsof X) is one of:
+;; * 'nothing
+;; * (make-ls X (lsof X))
+
+(define x (make-ls 10 20))
+
+;;(ls-length lsany) (Check Varible name and make sure ur doing it correctly) produces
+;;  the length of the list
+
+;;Examples 
+
+;;ls-length: (lsof Any) -> Num
+(define (ls-length lsany)
+  [cond
+    [(and (symbol? (ls-rest lsany)) (symbol=? (ls-rest lsany) 'nothing)) 1]
+    [else (+ 1 (ls-length (ls-rest lsany)))]])
+
+(ls-length(make-ls "!" (make-ls 'huh (make-ls 42 'nothing))))

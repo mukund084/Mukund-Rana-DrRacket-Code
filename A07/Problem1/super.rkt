@@ -1,0 +1,146 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname super) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor mixed-fraction #f #t none #f () #t)))
+;; ==========================================================
+;; Mukund Rana (mk3rana)
+;; CS 135 Fall 2020
+;; Assignmnet 7, Q1
+;; ==========================================================
+;;
+
+;; A nested list of X (nested-listof X) is one of:
+;; * empty
+;; * (cons (nested-listof X) (nested-listof X))
+;; * (cons X (nested-listof X))
+
+;; Question Can I define my own data definition for Super-filter? 
+
+
+;;
+;; =============================================================================
+;; Q1 a) 
+;; =============================================================================
+;;
+
+;;(super-filter pred? (nested-listof X)) generlizes the filter to work on a nested
+;;  lists
+;; Examples
+(check-expect
+ (super-filter
+  odd?
+  (list 1 (list 2 (list 2 3 4) 5 6 (list 7 8 9)) 10 11 12))
+ (list 1 (list (list 3) 5 (list 7 9)) 11))
+
+
+;;super-filter: (X -> Bool) (nested-listof X) --> (nested-listof X)
+(define (super-filter pred? nested-lst)
+  (cond
+    [(empty? nested-lst) empty]
+    [(list? (first nested-lst))
+     (cons  (super-filter pred? (first nested-lst))
+            (super-filter pred? (rest nested-lst)))]
+    [(pred? (first nested-lst))
+     (cons (first nested-lst)
+           (super-filter pred? (rest nested-lst)))]
+    [else (super-filter pred? (rest nested-lst))]))
+
+
+;;tests
+(check-expect(super-filter odd? empty) empty)
+(check-expect(super-filter even? empty) empty)
+(check-expect
+ (super-filter
+  even?
+  (list 1 (list 2 (list 2 3 4) 5 6 (list 7 8 9)) 10 11 12))
+ (list (list 2 (list 2 4) 6 (list 8)) 10 12))
+
+
+
+;;
+;; =============================================================================
+;; Q1 b) 
+;; =============================================================================
+;;
+
+;;(rustless lst) removes the symbol 'ruth from the nested list of symbols
+;;Examples
+(check-expect
+ (ruthless
+  (list 'rabbit
+        (list 'apple 'pluto
+              (list 'ruth 'blue) 'ruth) 'hello))
+ (list 'rabbit
+       (list 'apple 'pluto
+             (list 'blue)) 'hello))
+
+
+;;rustless: (nested-listof Sym) --> (nested-listof Sym)
+(define (ruthless lst-names)
+  (local [(define (not-ruth? name)
+            (not (symbol=? name 'ruth)))]
+    (super-filter not-ruth? lst-names)))
+
+;;tests
+(check-expect
+ (ruthless
+  (list 'rabbit
+        (list 'apple 'pluto
+              (list 'ruth 'blue) 'ruth) 'ruth))
+ (list 'rabbit
+       (list 'apple 'pluto
+             (list 'blue))))
+
+
+;;
+;; =============================================================================
+;; Q1 c) 
+;; =============================================================================
+;;
+
+;;(supersize n lst) removes all the numbers less than n from a nested list of
+;;  natural numbers
+;; Examples
+(check-expect
+ (supersize 4 (list 8 1 (list 2 6 3) 10 1))
+ (list 8 (list 6) 10))
+
+
+;;supersize: Num (nested-listof Num) --> (nested-listof Num)
+(define (supersize n lst)
+  (local [(define (check-num? x) (> x n))]
+    (super-filter check-num? lst)))
+
+;;tests 
+(check-expect
+ (supersize 4 (list 3 1 (list 2 6 3) 10 1))
+ (list (list 6) 10))
+
+
+
+;;
+;; =============================================================================
+;; Q1 d) 
+;; =============================================================================
+;;
+
+;;(super-keeper pred? lst) produces a list for in which the predicate produces a
+;; false value
+;; Examples
+(check-expect
+ (super-keeper
+  odd?
+  (list 1 (list 2 (list 2 3 4) 5 6 (list 7 8 9)) 10 11 12))
+ (list (list 2 (list 2 4) 6 (list 8)) 10 12))
+
+
+;;super-keeper: (X -> Bool) (nested-listof X) --> (nested-listof X)
+(define (super-keeper pred? lst)
+  (local [(define (opposite? x) (not (pred? x)))]
+    (super-filter opposite? lst)))
+
+;;tests 
+(check-expect
+ (super-keeper
+  even?
+  (list 1 (list 2 (list 2 3 4) 5 6 (list 7 8 9)) 10 11 12))
+ (list 1 (list (list 3) 5 (list 7 9)) 11))

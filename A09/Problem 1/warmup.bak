@@ -1,0 +1,64 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname warmup) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor mixed-fraction #f #t none #f () #t)))
+;; ==========================================================
+;; Mukund Rana (mk3rana)
+;; CS 135 Fall 2020
+;; Assignmnet 9, Q1 
+;; ==========================================================
+;;
+
+;;
+;; =============================================================================
+;; Q1 a) 
+;; =============================================================================
+;;
+
+
+;;(flip-case lst-string) procues a new list depending on the length of lst-string
+;;  if the length of lst-string is between 0 and 2 its returns the same string and
+;;  if the length of lst-string is greater than 3 it applies the changes in the
+;;  assignment
+
+;;Examples
+(check-expect (flip-case '("Mr" "Goose!")) '("Mr" "Goose!"))
+(check-expect
+ (flip-case '("OnLiNE" "ClAsSEs" "ArE" "sOo" "mUcH" "FuN!"))
+ '("OnLiNE" "ClAsSEs" "are" "SOO" "MUCH" "fun!"))
+
+;;flip-case: (listof Strings) -> (listof Strings)
+(define (flip-case lst-string) 
+  (local
+    [(define (sum first-lst second-lst)
+       (+ (length (string->list first-lst)) (length (string->list second-lst))))
+     
+     (define (third-element lst-string)
+       (cond
+         [(< (length lst-string) 3) empty]
+         [(even? (sum (first lst-string) (second lst-string)))
+          (cons (string-upcase (third lst-string)) (third-element (rest lst-string)))]
+         [(odd?  (sum (first lst-string) (second lst-string)))
+          (cons (string-downcase (third lst-string)) (third-element (rest lst-string)))]))
+     
+     (define (flip-case/acc lst-string)
+       (cond
+         [(> (length lst-string) 3)
+          (append (list (first lst-string)) (list (second lst-string))
+                  (third-element lst-string))]
+         [(or (= (length lst-string) 0)
+              (= (length lst-string) 1) (= (length lst-string) 2)) lst-string]))]
+
+    (flip-case/acc lst-string)))
+
+
+;;tests
+(check-expect 
+ (flip-case '("OnLiNE" "ClAsSEs" "ArE" "sOo" "mUcH" "FuN!" "Sometimes"))
+ '("OnLiNE" "ClAsSEs" "are" "SOO" "MUCH" "fun!" "SOMETIMES"))
+
+
+;;
+;; =============================================================================
+;; Q1 a) 
+;; =============================================================================
+;;

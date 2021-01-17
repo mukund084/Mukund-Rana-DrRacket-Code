@@ -1,0 +1,258 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-abbr-reader.ss" "lang")((modname recog) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor mixed-fraction #f #t none #f () #t)))
+;; ***********************************************************
+;; Mukund Rana (mk3rana)
+;; CS 135 Fall 2020
+;; Assignment 4, Q3
+;; ***********************************************************
+;;
+
+;;
+;; ***********************************************************
+;; Q3 a)
+;; ***********************************************************
+;;
+
+
+;; 3a)
+;; These are helper functions. See assignment for design recipe requirements.s get-x
+
+;;(get-x lstpoint) produces the x-coordinate of a point
+;;Examples
+;;(check-within (get-x (list 3 4)) 3 0.01)
+;;(check-within (get-x (list 2 0)) 2 0.01)
+
+;;get-x: (listof Nums) -> Num
+;;(define (get-x lstpoint)
+;;  (first lstpoint))
+
+
+;;(get-y lstpoint) produces the y-coordinate of a point
+;;Examples
+;;(check-within (get-y (list 3 4)) 4 0.01)
+;;(check-within (get-y (list 3 0)) 0 0.01)
+
+;;get-y: (listof Nums) -> Num
+(define (get-y lstpoint)
+  (second lstpoint))
+
+
+;;(translate-gesture lstnums x-offset y-offset) produces a new gesture onces
+;;  once x-offset and y-offset are applied to each x-coordinate and y-coordinate
+;;  in the list
+;;Examples
+;;(check-within (translate-gesture (list(list 3 4)) 1 2) (list(list 4 6))  0.01)
+;;(check-within (translate-gesture (list(list 3 4) (list 4 5)) 1 2) (list(list 4 6)
+;;(list 5 7))  0.01)
+
+
+;;translate-gesture: (listof (list Num Num)) Num Num -> (lisof Nums)
+(define (translate-gesture lstpoints x-offset y-offset)
+  (cond
+    [(empty? lstpoints) empty]
+    [else (cons (list (+ (first (first lstpoints)) x-offset)
+                      (+ (second (first lstpoints)) y-offset))
+                (translate-gesture (rest lstpoints) x-offset y-offset))]))
+
+
+;;(scale-gesture lstnums x-scale y-scale) produces a new gesture onces
+;;  once x-scale and y-scale are applied to each x-coordinate and y-coordinate
+;;  in the list
+;;Examples
+(check-within (scale-gesture (list(list 3 4)) 1 2) (list(list 3 8))  0.01)
+;;(check-within (scale-gesture (list(list 3 4) (list 4 5)) 1 2)
+;;              (list(list 3 8) (list 4 10)) 0.01)
+
+
+;;translate-gesture: (listof (list Num Num)) Num Num -> (lisof Nums)
+(define (scale-gesture lstpoints x-scale y-scale)
+  (cond
+    [(empty? lstpoints) empty]
+    [else (cons (list (* (first (first lstpoints)) x-scale)
+                      (* (second (first lstpoints)) y-scale))
+                (scale-gesture (rest lstpoints) x-scale y-scale))]))
+
+
+;;(get-b-box lstgesture) produces the gestures Bounding Box
+;; Examples
+;;(check-within (get-b-box (list (list 100 0) (list 200 100) (list 100 200)
+;;                               (list 0 100) (list 100 0))) (list (list 0 0)
+;;                                                                 (list 200 200)) 0.01)
+
+;;get-b-box: (listof (list Num Num)) -> (listof (list Num Num) (list Num Num))
+(define (get-b-box lstgesture)
+  (list (list (min-gesture (gesturex lstgesture)) (min-gesture
+                                                   (gesturey lstgesture))) 
+        (list (max-gesture (gesturex lstgesture)) (max-gesture
+                                                   (gesturey lstgesture)))))
+
+;;(gesturex lstgesture) produces the minimum of the x gesture
+;; Examples
+
+;;gesturex: (listof (list Num Num)) -> (listof Num Num)
+(define (gesturex lstgesture)
+  (cond
+    [(empty? (rest lstgesture)) (cons (first (first lstgesture)) empty)]
+    [else  (cons (first (first lstgesture)) (gesturex (rest lstgesture))) ]))
+
+;;(gesturey lstgesture) produces the minimum of the y gesture
+;; Examples
+
+;;gesturey: (listof (list Num Num)) -> (listof Num Num)
+(define (gesturey lstgesture)
+  (cond
+    [(empty? (rest lstgesture)) (cons (second (first lstgesture)) empty)]
+    [else  (cons (second (first lstgesture)) (gesturey (rest lstgesture))) ]))
+
+;;(min-gesture lstgesturexy) finds the min of gesuture values in a list
+;;Examples 
+
+;;min-gesture: (listof Num) -> Num
+(define (min-gesture lstgesturexy)
+  (cond [(empty? (rest lstgesturexy)) (first lstgesturexy)]
+        [else (min (first lstgesturexy)
+                   (min-gesture (rest lstgesturexy)))]))
+
+;;(max-gesture lstgesturexy) finds the max of gesuture values in a list
+;;Examples 
+
+;;max-gesture: (listof Num) -> Num
+(define (max-gesture lstgesturexy)
+  (cond [(empty? (rest lstgesturexy)) (first lstgesturexy)]
+        [else (max (first lstgesturexy)
+                   (max-gesture (rest lstgesturexy)))]))
+
+
+
+
+                
+
+
+;; 3b)
+;; Full design recipe required.
+
+;;(gesture-length lstgesture) calculates the sum of distances between adjacent
+;;  points in the gesture
+;; Examples
+;;(check-within (gesture-length (list (list 7 4) (list 3 4) (list 8 9) (list 3 4))) 18.14  0.01)
+
+;;gesture-length: (listof (list Num Num))-> Num
+(define (gesture-length lstgesture)
+  (cond
+    [(empty? lstgesture) 0]
+    [(empty? (rest lstgesture)) 0]
+    [else (+(sqrt (distance (first lstgesture) (second lstgesture)))
+            (gesture-length (rest lstgesture)))]))
+
+;;tests
+;;(check-within (gesture-length (list )) 0 0.01)
+;;(check-within (gesture-length (list(list 2 4))) 0 0.01)
+;;(check-within (gesture-length (list (list 7 4) (list 3 4) (list 8 9) (list 3 4) (list 6 5))) 21.30  0.01)
+
+;;(distance lstpoint1 lstpoint2) calculates the distance between 2 adjecent points
+;; Examples
+;;(check-within (distance (list 3 4) (list 7 4)) 16  0.01)
+
+;;distance: (listof Num Num) (listof Num Num) -> Num
+(define (distance lstpoint1 lstpoint2)
+  (+(expt (- (first lstpoint2) (first lstpoint1)) 2) (expt (- (second lstpoint2)
+                                                              (second lstpoint1)) 2)))
+
+;;tests
+;;(check-within (distance (list 0 0) (list 7 4)) 65  0.01)
+;;(check-within (distance (list 0 0) (list 0 0)) 0  0.01)
+
+
+;;
+;; ***********************************************************
+;; Q3 bii) 
+;; ***********************************************************
+;;
+
+;; (countup n) produces an increasing list from n to 0
+;; Example:
+
+;; countup: Int -> (listof Int)
+;; requires: n >= 0
+(define (countup n glength)
+  (cond [(= (- glength 1) n) (cons n empty)]
+        [else (cons n (countup (add1 n) glength))]))
+
+;;tests
+
+
+;; (insert n slon) inserts the number n into the sorted list slon...
+;; Examples:
+
+;; insert: (listof Num) (listof (listof Num Num)) → (listof Num)
+;; requires: slon is sorted in non-decreasing order
+(define (insert indexlst slon)
+  (cond
+    [(empty? slon) empty]
+    [else (cons (list (first indexlst) (first slon)) (insert  (rest indexlst)(rest slon)))]))
+
+;;tests
+
+
+;; (combine-index glst) combines the index with each point in a list of gesture
+;; Examples
+
+;;combine-index: (list0f (list Num Num)) -> (listof (list Num Num Num))
+(define (combine-index glst)
+  (insert (countup 0 (length glst)) glst))
+
+;;tests
+;;(combine-index (list (list 2 3) (list 4 5) (list 6 7)))
+
+(define (key kv) (first kv))
+(define (val kv) (second kv))
+ 
+ ;; (lookup-al k alst) produces the value corresponding to key k,
+ ;; or false if k not present
+ ;; lookup-al:
+ 
+ (define (lookup-al k alst)
+   (cond
+     [(empty? alst) false]
+     [(= k (key (first alst))) (val (first alst))]
+     [else (lookup-al k (rest alst))]))
+
+;;tests 
+;; (lookup-al 0 (list (list 0 (list 2 3)) (list 1 (list 4 5)) (list 2 (list 6 7))))
+
+
+;;(get-points g lstindex) produces a list of points based on the index of each point
+;;  in a gesture
+;;Examples
+
+;;get-points: (listof (list Num Num)) -> (listof (list Num Num))
+(define (get-points g lstindex)
+  (cond
+    [(empty? lstindex) empty]
+    [else (cons (lookup-al (first lstindex) (combine-index g)) (get-points g (rest lstindex)))]))
+
+;;tests
+(get-points  (list (list 2 3) (list 4 5) (list 6 7)) (list 0 0 1))
+
+
+
+
+
+
+ ;; 3c) Starter code definitions
+
+ ;; 3ci)
+ ;;(five-sample gesture) produces a sampling of gesture 5 points
+ ;;  the first, n/4th, n/2th, 3n/4th, and last point.
+ ;; Examples:
+ ;;(check-expect (five-sample (list (list 1 1) (list 2 2)))
+ ;;              (list (list 1 1) (list 1 1) (list 2 2) (list 2 2) (list 2 2)))
+ ;;(check-expect (five-sample (list (list 1 1) (list 2 2) (list 3 3) (list 4 4)
+ ;;                                (list 5 5) (list 6 6) (list 7 7) (list 8 8)))
+ ;;              (list (list 1 1) (list 3 3) (list 5 5) (list 7 7) (list 8 8)))
+
+
+
+ ;; five-sample: Gesture -> Gesture
+ ;; requires: gesture is non-empty

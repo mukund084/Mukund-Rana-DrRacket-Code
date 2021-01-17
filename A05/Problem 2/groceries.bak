@@ -1,0 +1,62 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-abbr-reader.ss" "lang")((modname groceries) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor mixed-fraction #f #t none #f () #t)))
+;;
+;; ***********************************************************
+;; Mukund Rana (mk3rana)
+;; CS 135 Fall 2020
+;; Assignment 5, Q2 
+;; ***********************************************************
+;;
+
+;; ***********************************************************
+;; Q2 a)
+;; ***********************************************************
+
+(define-struct grocery (dept name cost mass))
+
+;; A Grocery is a (make-grocery Str Str Num Num)
+;; Requires: cost >= 0, mass > 0.
+;; A Store is a (listof Grocery)
+;; Requires: no two items have both the same dept and same name.
+
+(define try-n-save
+  (list (make-grocery "produce" "apple" 2.49 600)
+        (make-grocery "seed" "rice" 0.95 1000)
+        (make-grocery "dairy" "milk" 3.99 4000)
+        (make-grocery "seed" "pinto" 2.49 500)
+        (make-grocery "produce" "potato" 2.99 5000)
+        (make-grocery "chips" "potato" 1.99 250)
+        (make-grocery "chips" "corn" 1.99 275)
+        (make-grocery "seed" "wheat" 0.49 500)
+        (make-grocery "produce" "banana" 0.69 450)
+        (make-grocery "dairy" "cheese" 6.49 900)
+        (make-grocery "chips" "banana" 1.99 50)
+        (make-grocery "produce" "peach" 3.99 400)
+        (make-grocery "seed" "lentil" 2.99 800)
+        (make-grocery "produce" "corn" 0.99 100)
+        (make-grocery "seed" "corn" 4.99 850)
+        (make-grocery "dairy" "kefir" 5.99 1000)))
+
+(define kwik-e-mart
+  (list (make-grocery "seed" "rice" 0.38 400)
+        (make-grocery "can" "corn" 4.00 400)
+        (make-grocery "seed" "pinto" 2.49 500)
+        (make-grocery "produce" "apple" 2.99 400)
+        (make-grocery "can" "creamed eels" 2.19 350)
+        (make-grocery "produce" "pineapple" 3.17 250)))
+
+
+(define student-shop
+  (list "snacks" "chocolates" 4.99 10)
+  (list "snacks" "ice-cream" 5.99 20)
+  (list "games" "Mario Kart" 50.99 40)
+  (list "games" "Pokemon" 70.99 60)
+  (list "vegetables" "cauliflower" 3.99 300)
+  (list "vegetables" "carrot" 2.99 200)
+  (list "baked goods" "Donuts" 1.99 30)
+  (list "baked goods" "cookies" 0.99 15)
+  (list "baked goods" "pie" 10.99 500)
+  (list "baked goods" "bagel" 10.99 15))
+  
+  

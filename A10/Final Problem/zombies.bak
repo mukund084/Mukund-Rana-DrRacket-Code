@@ -1,0 +1,92 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname zombies) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor mixed-fraction #f #t none #f () #t)))
+;; ==========================================================
+;; Mukund Rana (mk3rana)
+;; CS 135 Fall 2020
+;; Assignmnet 10, Q1 
+;; ==========================================================
+;;
+
+;; A Location is a Nat
+
+;; A Town is a (listof (list Location (listof Location)))
+
+;; Requires: Town represents a valid graph as defined in Module 16
+
+(define waterloo '((0 (1 2 3))
+                   (1 (2 3))
+                   (2 (0 4))
+                   (3 (1))
+                   (4 (5))
+                   (5 (3))))
+
+
+
+;; A Horde is a (listof (list Location Nat))
+
+;;
+;; =============================================================================
+;; I 
+;; =============================================================================
+;;
+
+
+;;(infect town zombies) produces a horde where each location has the same number
+;;  zombies
+;;Examples 
+(check-expect (infect empty 1000) empty)
+
+;;infect: Town Nat -> Horde
+(define (infect town zombies)
+  (map (lambda (x) (cons (first x) (cons zombies empty))) town))
+
+;;tests
+(check-expect (infect waterloo 1000)
+              (list (list 0 1000) (list 1 1000) (list 2 1000)
+                    (list 3 1000) (list 4 1000) (list 5 1000)))
+
+
+
+;;
+;; =============================================================================
+;; II 
+;; =============================================================================
+;;
+
+;;constants
+(define zombies-sink 0.05)
+(define decrease-in-town 0.95)
+
+;;(sink horde) produces a list of two elements where the first element is the total
+;;  number of zombies that sink into the earth and the second element is the horde
+;;  after the zombies have sunken into the earth
+
+;;Examples
+
+;;sink: Horde -> (listof Num Horde)
+;; Requires: Horde to be non-empty
+(define (sink horde)
+  (list (round (* (* zombies-sink (length horde)) (second (first horde))))
+        (map (lambda (x) (cons (first x)
+                               (cons (* decrease-in-town(second x)) empty))) horde)))
+
+;;tests
+(check-expect
+ (sink (infect waterloo 1000))
+ (list 300 (list (list 0 950) (list 1 950) (list 2 950)
+                 (list 3 950) (list 4 950) (list 5 950))))
+
+
+
+;;
+;; =============================================================================
+;; III
+;; =============================================================================
+;;
+
+
+
+
+
+
